@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biteworks - Dashboard Profit</title>
+    <title>Biteworks - Sistem Distribusi Profit</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
@@ -14,26 +14,26 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         body { 
-            background-color: #eef2f6; color: #333; 
+            background-color: #f1f5f9; color: #334155; 
             height: 100vh; width: 100vw; overflow: hidden; 
             display: flex; flex-direction: column;
         }
 
         /* --- 2. HEADER APP --- */
         header {
-            background: linear-gradient(90deg, #001f8f 0%, #0033cc 100%);
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
             padding: 0 25px; height: 60px; 
             display: flex; align-items: center; justify-content: space-between;
             color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             flex-shrink: 0; z-index: 100;
         }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo-box { background-color: rgba(255, 255, 255, 0.2); padding: 5px 12px; border-radius: 4px; font-weight: 800; letter-spacing: 1px; font-size: 1rem; }
-        .app-title { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+        .logo-box { background-color: rgba(255, 255, 255, 0.1); padding: 5px 12px; border-radius: 4px; font-weight: 800; letter-spacing: 1px; font-size: 1rem; border: 1px solid rgba(255,255,255,0.2); }
+        .app-title { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* --- 3. DASHBOARD GRID --- */
         .dashboard-container {
-            flex: 1; display: grid; grid-template-columns: 500px 1fr; 
+            flex: 1; display: grid; grid-template-columns: 480px 1fr; 
             gap: 15px; padding: 15px; height: calc(100vh - 60px); overflow: hidden;
         }
 
@@ -42,28 +42,24 @@
 
         .panel-card {
             background: white; border-radius: 8px; padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; border: 1px solid #e2e8f0;
         }
 
         .card-title {
-            font-size: 0.85rem; font-weight: 700; color: #555; text-transform: uppercase;
-            margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #f0f0f0;
+            font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase;
+            margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #f1f5f9;
         }
 
-        /* Global Input Section */
-        .global-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .mini-stat { background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
-        .mini-label { font-size: 0.7rem; color: #64748b; font-weight: 600; display: block; }
-        .mini-val { font-size: 0.9rem; font-weight: 800; color: #001f8f; }
-        .input-global { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; color: #001f8f; }
+        .mini-label { font-size: 0.7rem; color: #64748b; font-weight: 700; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .input-global { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; color: #0f172a; font-size: 1rem; }
 
         /* Upload Area Styled */
         .upload-compact {
             border: 2px dashed #cbd5e1; border-radius: 6px; padding: 15px; text-align: center;
-            cursor: pointer; background: #f8fafc; transition: 0.2s; position: relative;
+            cursor: pointer; background: #f8fafc; transition: 0.2s; position: relative; margin-top: 10px;
         }
-        .upload-compact:hover { border-color: #001f8f; background: #eff6ff; }
-        .upload-text { font-size: 0.85rem; font-weight: 600; color: #475569; }
+        .upload-compact:hover { border-color: #0f172a; background: #f1f5f9; }
+        .upload-text { font-size: 0.85rem; font-weight: 600; color: #64748b; }
         
         .upload-compact.has-file { border: 2px solid #22c55e; background: #f0fdf4; }
         .file-name-display { color: #15803d; font-weight: 700; word-break: break-all; }
@@ -71,105 +67,106 @@
         /* Daily Input Table */
         .daily-input-wrapper {
             flex: 1; display: flex; flex-direction: column; overflow: hidden;
-            background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
         }
-        .daily-header { padding: 10px 15px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 0.85rem; color: #333; }
+        .daily-header { padding: 10px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 0.85rem; color: #475569; }
         .daily-scroll-area { flex: 1; overflow-y: auto; }
 
         /* Validation Footer */
         .validation-footer {
-            background: #1e293b; color: white; padding: 10px 15px; border-radius: 8px;
-            flex-shrink: 0; font-size: 0.8rem;
+            background: #1e293b; color: white; padding: 12px 15px; border-radius: 8px;
+            flex-shrink: 0; font-size: 0.8rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-        .val-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .val-total { font-size: 0.9rem; font-weight: bold; border-top: 1px dashed #475569; padding-top: 5px; margin-top: 5px; }
-        .status-badge { text-align: center; padding: 5px; margin-top: 8px; border-radius: 4px; font-weight: 800; font-size: 0.85rem; }
+        .val-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .val-total { font-size: 0.95rem; font-weight: bold; border-top: 1px dashed #64748b; padding-top: 8px; margin-top: 8px; }
+        .status-badge { text-align: center; padding: 8px; margin-top: 10px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.5px; }
         .st-ok { background: #22c55e; color: white; }
         .st-err { background: #ef4444; color: white; }
         .st-warn { background: #f59e0b; color: white; }
 
         /* --- 5. PANEL KANAN (REKAP) --- */
         .right-panel {
-            background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column; overflow: hidden;
+            background: transparent; 
+            display: flex; flex-direction: column; overflow: hidden; gap: 15px;
         }
         .rp-header {
-            padding: 10px 15px; border-bottom: 1px solid #e2e8f0;
+            padding: 15px; border-radius: 8px;
             display: flex; justify-content: space-between; align-items: center; background: #fff;
-            gap: 15px; flex-shrink: 0;
+            gap: 15px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
         }
         .rp-info { flex: 1; }
-        .rp-title { font-size: 1rem; font-weight: 800; color: #001f8f; margin: 0; }
+        .rp-title { font-size: 1rem; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; }
         
         .rp-actions { display: flex; gap: 8px; }
         .btn-export {
-            padding: 8px 15px; background-color: #166534; color: white; border: none; border-radius: 5px;
-            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;
+            padding: 8px 15px; background-color: #15803d; color: white; border: none; border-radius: 6px;
+            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
             transition: 0.2s;
         }
-        .btn-export:hover { background-color: #14532d; }
+        .btn-export:hover { background-color: #166534; }
         .btn-export:disabled { background-color: #cbd5e1; cursor: not-allowed; }
         
         .btn-reset {
-            padding: 8px 12px; background-color: #dc2626; color: white; border: none; border-radius: 5px;
-            cursor: pointer; transition: 0.2s; font-size: 0.8rem;
+            padding: 8px 12px; background-color: #dc2626; color: white; border: none; border-radius: 6px;
+            cursor: pointer; transition: 0.2s; font-size: 0.85rem;
         }
-        .btn-reset:hover { background-color: #991b1b; }
+        .btn-reset:hover { background-color: #b91c1c; }
 
         /* --- BARU: TOP SUMMARY CARDS --- */
         .top-cards-grid {
             display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
-            padding: 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
             flex-shrink: 0;
         }
         .top-card {
-            background: white; border-radius: 6px; padding: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+            background: white; border-radius: 8px; padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
             position: relative; overflow: hidden;
         }
         .top-card::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
         }
         /* Card Colors */
-        .tc-blue { border-left: 4px solid #001f8f; } /* Mhs */
-        .tc-green { border-left: 4px solid #166534; } /* Kas */
-        .tc-orange { border-left: 4px solid #d97706; } /* Prodi */
+        .tc-blue { border-left: 5px solid #2563eb; } /* Mhs */
+        .tc-green { border-left: 5px solid #16a34a; } /* Kas */
+        .tc-orange { border-left: 5px solid #d97706; } /* Prodi */
 
         .tc-label { font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .tc-value { font-size: 1.1rem; font-weight: 800; color: #333; margin-top: 5px; }
-        .tc-icon {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            font-size: 1.8rem; color: #f1f5f9; z-index: 0;
+        .tc-value { font-size: 1.2rem; font-weight: 800; color: #1e293b; margin-top: 5px; }
+        
+        /* Card Content Area */
+        .content-card-wrapper {
+            background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
         }
-
-        .rp-content { flex: 1; overflow-y: auto; padding: 15px; background: #f8fafc; }
+        .content-header { padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #334155; font-size: 0.9rem; }
+        .rp-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
 
 
         /* --- 6. TABEL DESAIN --- */
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th { 
             background: #f1f5f9; color: #475569; font-weight: 700; text-transform: uppercase; 
-            padding: 8px; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #e2e8f0;
+            padding: 10px; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #e2e8f0;
         }
-        td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #333; vertical-align: middle; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; color: #334155; vertical-align: middle; }
         
-        .input-xs { width: 100%; padding: 4px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.8rem; text-align: right; }
-        .input-xs:focus { outline: none; border-color: #001f8f; background: #eff6ff; }
+        .input-xs { width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; text-align: right; color: #1e293b; font-weight: 600; }
+        .input-xs:focus { outline: none; border-color: #2563eb; background: #eff6ff; }
 
         /* Employee Section Card */
-        .emp-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 15px; overflow: hidden; }
+        .emp-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .emp-head {
-            background: #eff6ff; padding: 8px 15px; border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc; padding: 8px 15px; border-bottom: 1px solid #e2e8f0;
             display: flex; align-items: center; gap: 10px;
         }
-        .emp-name { font-weight: 800; color: #001f8f; font-size: 0.9rem; text-transform: uppercase; }
-        .emp-total { margin-left: auto; font-weight: 700; color: #166534; font-size: 0.9rem; }
+        .emp-name { font-weight: 800; color: #1e293b; font-size: 0.9rem; text-transform: uppercase; }
+        .emp-total { margin-left: auto; font-weight: 700; color: #15803d; font-size: 0.9rem; }
         
         .text-right { text-align: right; }
         .text-bold { font-weight: 700; }
-        .text-green { color: #166534; }
+        .text-green { color: #15803d; }
         .text-gray { color: #64748b; }
-        .text-blue { color: #001f8f; font-weight: 700; }
+        .text-blue { color: #2563eb; font-weight: 700; }
         .row-empty { background: #fff7ed; }
 
         /* Scrollbar */
@@ -184,15 +181,15 @@
     <header>
         <div class="header-left">
             <div class="logo-box">BITEWORKS</div>
-            <div class="app-title">SISTEM REKAP & DISTRIBUSI PROFIT</div>
+            <div class="app-title">SISTEM DISTRIBUSI PROFIT & INSENTIF</div>
         </div>
         <div class="rp-actions">
             <button id="btnExport" class="btn-export" onclick="exportToExcel()" disabled>
-                <i class="fa-solid fa-file-excel"></i> EXPORT
-                </button>
-                    <button class="btn-reset" onclick="resetAll()" title="Reset Data">
-                        <i class="fa-solid fa-rotate-right"></i>
-                </button>
+                <i class="fa-solid fa-file-excel"></i> DOWNLOAD LAPORAN
+            </button>
+            <button class="btn-reset" onclick="resetAll()" title="Reset Data">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
         </div>
     </header>
 
@@ -201,23 +198,18 @@
         <aside class="left-panel">
             
             <div class="panel-card">
-                <div class="card-title">SETUP DATA</div>
-                <div class="global-grid" style="margin-bottom: 10px;">
-                    <div>
-                        <label class="mini-label">TOTAL PROFIT GLOBAL</label>
-                        <input type="number" id="globalProfitInput" class="input-global" placeholder="Rp 0">
-                    </div>
-                    <div class="mini-stat">
-                        <span class="mini-label">TARGET PEGAWAI (40%)</span>
-                        <div id="targetGlobalMhs" class="mini-val">Rp 0</div>
-                    </div>
+                <div class="card-title">KONFIGURASI DATA</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label class="mini-label">TOTAL LABA BERSIH (NET PROFIT)</label>
+                    <input type="number" id="globalProfitInput" class="input-global" placeholder="Rp 0">
                 </div>
                 
                 <div class="upload-compact" id="dropArea">
                     <div id="uploadPlaceholder">
                         <div class="upload-text">
-                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.2rem; margin-bottom:5px; color:#001f8f;"></i><br>
-                            Klik / Drag File Absensi (.xlsx)
+                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; margin-bottom:8px; color:#64748b;"></i><br>
+                            Upload File Absensi (.xlsx)
                         </div>
                     </div>
                     <input type="file" id="fileInput" accept=".xlsx, .xls" hidden>
@@ -225,19 +217,19 @@
             </div>
 
             <div class="daily-input-wrapper">
-                <div class="daily-header">REKAPITULASI LABA HARIAN</div>
+                <div class="daily-header">JURNAL LABA HARIAN</div>
                 <div class="daily-scroll-area">
                     <table id="tableDaily">
                         <thead>
                             <tr>
                                 <th style="width: 20%;">TGL</th>
                                 <th style="width: 15%;">JAM</th>
-                                <th style="width: 35%;">INPUT LABA</th>
-                                <th style="width: 30%; text-align:right;">MAHASISWA (40%)</th>
+                                <th style="width: 35%;">REVENUE HARIAN</th>
+                                <th style="width: 30%; text-align:right;">ALOKASI SDM (40%)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td colspan="4" style="text-align:center; padding: 20px; color:#999;">Belum ada data...</td></tr>
+                            <tr><td colspan="4" style="text-align:center; padding: 30px 20px; color:#94a3b8; font-style:italic;">Belum ada data absensi...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -245,62 +237,51 @@
 
             <div class="validation-footer">
                 <div class="val-row">
-                    <span>Total Input Laba:</span>
+                    <span>Total Realisasi Revenue:</span>
                     <span id="totalInputLaba">Rp 0</span>
                 </div>
                 <div class="val-row" style="color: #fbbf24;">
-                    <span>Laba (Tanpa Absensi):</span>
+                    <span>Laba Non-Operasional (Libur):</span>
                     <span id="summaryNoWorkProfit">Rp 0</span>
                 </div>
                 <div class="val-row" style="font-size:0.75rem; padding-left:10px; color:#94a3b8;">
-                    ↳ Laba Tanpa Absensi (40%): <span id="summaryNoWorkAllocated">Rp 0</span>
+                    ↳ Alokasi Non-Ops (40%): <span id="summaryNoWorkAllocated">Rp 0</span>
                 </div>
                 <div class="val-row val-total">
-                    <span>Total Terbagi (Real):</span>
+                    <span>Total Distribusi SDM (Real):</span>
                     <span id="summaryAllocatedMhs">Rp 0</span>
                 </div>
-                <div id="statusBox" class="status-badge st-ok">MENUNGGU DATA</div>
+                <div id="statusBox" class="status-badge st-ok">MENUNGGU DATA INPUT</div>
             </div>
 
         </aside>
 
         <main class="right-panel">
-            <div class="rp-header">
-                <div class="rp-info">
-                    <h2 class="rp-title">ALOKASI LABA</h2>
-                </div>
-                <div class="rp-actions">
-                    <!-- <button id="btnExport" class="btn-export" onclick="exportToExcel()" disabled>
-                        <i class="fa-solid fa-file-excel"></i> EXPORT
-                    </button>
-                    <button class="btn-reset" onclick="resetAll()" title="Reset Data">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button> -->
-                </div>
-            </div>
-
+            
             <div class="top-cards-grid">
                 <div class="top-card tc-blue">
-                    <i class="fa-solid fa-user-graduate tc-icon"></i>
-                    <div class="tc-label">MAHASISWA (40%)</div>
+                    <div class="tc-label">DANA INSENTIF SDM (40%)</div>
                     <div class="tc-value" id="cardValMhs">Rp 0</div>
                 </div>
                 <div class="top-card tc-green">
-                    <i class="fa-solid fa-vault tc-icon"></i>
-                    <div class="tc-label">KAS (20%)</div>
+                    <div class="tc-label">KAS CADANGAN (20%)</div>
                     <div class="tc-value" id="cardValKas">Rp 0</div>
                 </div>
                 <div class="top-card tc-orange">
-                    <i class="fa-solid fa-building-columns tc-icon"></i>
-                    <div class="tc-label">PRODI (40%)</div>
+                    <div class="tc-label">SETORAN PRODI (40%)</div>
                     <div class="tc-value" id="cardValProdi">Rp 0</div>
                 </div>
             </div>
             
-            <div class="rp-content" id="employeeCardsContainer">
-                <div style="text-align: center; color: #94a3b8; margin-top: 50px;">
-                    <i class="fa-solid fa-users-viewfinder" style="font-size: 3rem; margin-bottom: 10px;"></i>
-                    <p>Silakan upload file Excel untuk melihat rincian Mahasiswa.</p>
+            <div class="content-card-wrapper">
+                <div class="content-header">
+                    RINCIAN GAJI & INSENTIF PEGAWAI
+                </div>
+                <div class="rp-content" id="employeeCardsContainer">
+                    <div style="text-align: center; color: #94a3b8; margin-top: 80px;">
+                        <i class="fa-solid fa-clipboard-user" style="font-size: 3.5rem; margin-bottom: 15px; opacity:0.5;"></i>
+                        <p>Silakan upload file Excel untuk melihat rincian gaji.</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -312,70 +293,55 @@
         <tbody></tbody>
     </table>
 
-    <script>
+<script>
     moment.locale('id');
 
+    // --- STATE VARIABLES ---
     let currentGlobalProfit = 0;
     let tableInputs = {}; 
     let dailySummarySeconds = {}; 
     let globalExcelData = [];
+    let uniqueEmployeeList = []; 
+    let specialAllocations = {}; 
     let dateRange = { min: null, max: null };
-    // Variabel untuk menyimpan nama file asli (default jika belum upload)
     let uploadedFileName = "Data_Absensi"; 
+    
+    // Variabel bantu jam kerja
+    let userTotalSeconds = {}; 
+    let grandTotalSeconds = 0; 
 
     const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
     
     // --- DOM REFERENCES ---
     const globalProfitInput = document.getElementById('globalProfitInput');
-    const targetGlobalMhsDisplay = document.getElementById('targetGlobalMhs');
     
-    // Cards Reference
     const cardValMhs = document.getElementById('cardValMhs');
     const cardValKas = document.getElementById('cardValKas');
     const cardValProdi = document.getElementById('cardValProdi');
     
     const dropArea = document.getElementById('dropArea');
     const fileInput = document.getElementById('fileInput');
-    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
     const btnExport = document.getElementById('btnExport');
     
     const tbodyHardfile = document.querySelector('#tableHardfile tbody');
     const tbodyDaily = document.querySelector('#tableDaily tbody');
     const employeeCardsContainer = document.getElementById('employeeCardsContainer');
 
-    // --- 1. GLOBAL CALCULATION ---
-    const calculateGlobal = (val) => {
-        if (isNaN(val)) val = 0;
-        currentGlobalProfit = val;
-        
-        const mhsPortion = val * 0.40;
-        const kasPortion = val * 0.20;
-        const prodiPortion = val * 0.40;
-
-        // Update Panel Kiri
-        targetGlobalMhsDisplay.innerText = formatRupiah(mhsPortion);
-
-        // Update 3 Kartu Besar
-        cardValMhs.innerText = formatRupiah(mhsPortion);
-        cardValKas.innerText = formatRupiah(kasPortion);
-        cardValProdi.innerText = formatRupiah(prodiPortion);
-
-        validateTotals();
-    }
-    globalProfitInput.addEventListener('input', (e) => calculateGlobal(parseFloat(e.target.value)));
-
-    // --- 2. UPLOAD LOGIC ---
+    // --- 1. UPLOAD LOGIC ---
     dropArea.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', function() { handleFile(this.files[0]); });
-    dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.style.background = '#e0e7ff'; });
-    dropArea.addEventListener('dragleave', () => { 
-        if(!dropArea.classList.contains('has-file')) dropArea.style.background = '#f8fafc'; 
+    
+    ['dragover', 'dragleave', 'drop'].forEach(evt => {
+        dropArea.addEventListener(evt, (e) => {
+            e.preventDefault();
+            if(evt === 'dragover') dropArea.style.background = '#e0e7ff';
+            if(evt === 'dragleave' || evt === 'drop') {
+                if(!dropArea.classList.contains('has-file')) dropArea.style.background = '#f8fafc';
+            }
+        });
     });
-    dropArea.addEventListener('drop', (e) => { 
-        e.preventDefault(); 
-        if(!dropArea.classList.contains('has-file')) dropArea.style.background = '#f8fafc'; 
-        handleFile(e.dataTransfer.files[0]); 
-    });
+    
+    dropArea.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
 
     function handleFile(file) {
         if (!file) return;
@@ -384,32 +350,24 @@
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, {raw: false}); 
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {raw: false}); 
 
                 if(jsonData.length > 0) {
-                    // Simpan nama file asli tanpa ekstensi .xlsx
                     uploadedFileName = file.name.replace(/\.[^/.]+$/, "");
-
                     dropArea.classList.add('has-file');
-                    dropArea.innerHTML = `
-                        <i class="fa-solid fa-file-circle-check" style="font-size: 1.5rem; color: #166534; margin-bottom:5px;"></i>
-                        <div class="file-name-display">${file.name}</div>
-                    `;
+                    dropArea.innerHTML = `<i class="fa-solid fa-file-circle-check" style="font-size: 1.5rem; color: #166534; margin-bottom:5px;"></i><div class="file-name-display">${file.name}</div>`;
+                    
                     processExcelData(jsonData);
                     btnExport.disabled = false;
                 } else { alert("File kosong!"); }
-            } catch (err) { console.error(err); alert("Gagal membaca file Excel. Pastikan format sesuai."); }
+            } catch (err) { console.error(err); alert("Gagal membaca file Excel."); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function resetAll() {
-        if(confirm("Reset semua data?")) { location.reload(); }
-    }
+    function resetAll() { if(confirm("Reset semua data?")) location.reload(); }
 
-    // --- 3. HELPER FUNCTIONS ---
+    // --- 2. HELPER FUNCTIONS ---
     function timeStringToSeconds(val) {
         if (!val) return 0;
         if (typeof val === 'number' && val < 1) { return Math.round(val * 24 * 3600); }
@@ -433,27 +391,27 @@
     function parseExcelDate(val) {
         if (!val) return null;
         if (typeof val === 'number') { return moment(new Date(Math.round((val - 25569) * 86400 * 1000))); }
-        const formats = ['DD/MM/YYYY', 'D/M/YYYY', 'YYYY-MM-DD', 'DD-MM-YYYY', 'MM/DD/YYYY', 'MM/DD/YY'];
-        const m = moment(val, formats, true);
-        if(m.isValid()) return m;
-        const d = new Date(val);
-        if(!isNaN(d)) return moment(d);
-        return null;
+        const m = moment(val, ['DD/MM/YYYY', 'YYYY-MM-DD'], true);
+        return m.isValid() ? m : moment(new Date(val));
     }
 
-    // --- 4. PROCESS EXCEL ---
+    // --- 3. PROCESS EXCEL ---
     function processExcelData(data) {
         tbodyHardfile.innerHTML = '';
         tbodyDaily.innerHTML = '';
         employeeCardsContainer.innerHTML = ''; 
         dailySummarySeconds = {}; 
         tableInputs = {};
+        specialAllocations = {}; 
         globalExcelData = []; 
+        uniqueEmployeeList = [];
+        userTotalSeconds = {};
+        grandTotalSeconds = 0;
         dateRange = { min: null, max: null };
         
         let minDate = null;
         let maxDate = null;
-        const processedData = [];
+        const tempNames = new Set();
 
         data.forEach(row => {
             const rawDate = row['Tanggal'] || row['tanggal'] || row['Date'];
@@ -463,25 +421,36 @@
                 if (!maxDate || mDate.isAfter(maxDate)) maxDate = mDate.clone();
                 row._normalizedDateKey = mDate.format('YYYY-MM-DD');
                 row._displayDate = mDate.format('DD/MM/YYYY');
-                processedData.push(row);
+                
+                const nama = row['Nama'] || row['nama'];
+                if(nama) tempNames.add(nama);
+
+                globalExcelData.push(row);
             }
         });
 
-        if (processedData.length === 0) { alert("Tidak ditemukan kolom 'Tanggal' yang valid!"); return; }
+        if (globalExcelData.length === 0) { alert("Data tanggal tidak valid!"); return; }
 
-        processedData.sort((a, b) => a._normalizedDateKey.localeCompare(b._normalizedDateKey));
-        globalExcelData = processedData;
+        uniqueEmployeeList = Array.from(tempNames).sort();
+        globalExcelData.sort((a, b) => a._normalizedDateKey.localeCompare(b._normalizedDateKey));
         dateRange.min = minDate;
         dateRange.max = maxDate;
 
-        processedData.forEach((row) => {
+        uniqueEmployeeList.forEach(n => userTotalSeconds[n] = 0);
+
+        globalExcelData.forEach((row) => {
             const nama = row['Nama'] || row['nama'] || '-';
             const dateKey = row._normalizedDateKey;
             const shift = row['Shift'] || row['shift'] || '-';
-            const rawTime = row['Total Jam Kerja'] || row['total jam kerja'] || row['Durasi'] || "00:00:00";
+            const rawTime = row['Total Jam Kerja'] || row['total jam kerja'] || "00:00:00";
             const seconds = timeStringToSeconds(rawTime);
 
             row['Total Jam Kerja'] = secondsToHMS(seconds); 
+
+            if (nama !== '-') {
+                userTotalSeconds[nama] = (userTotalSeconds[nama] || 0) + seconds;
+                grandTotalSeconds += seconds;
+            }
 
             const tr = document.createElement('tr');
             tr.setAttribute('data-date-key', dateKey);
@@ -502,254 +471,444 @@
                 const totalSeconds = dailySummarySeconds[dateKey] || 0;
                 const formattedTotal = secondsToHMS(totalSeconds);
                 const infoId = `info-${dateKey}`; 
+                const cellId = `cell-share-${dateKey}`;
                 
                 const tr = document.createElement('tr');
                 let totalCellHtml = `<td style="font-weight:bold;">${formattedTotal}</td>`;
-                let inputHtml = `<input type="number" class="input-xs" placeholder="Rp. (0)" oninput="handleDailyInput('${dateKey}', this.value)">`;
-                let portionHtml = `<td class="text-right text-blue" id="${infoId}">Rp 0</td>`;
+                let inputHtml = `<input type="number" class="input-xs" placeholder="Rp 0" oninput="handleDailyInput('${dateKey}', this.value)">`;
+                let shareHtml = `<div class="text-right text-blue" id="${infoId}">Rp 0</div>`;
 
                 if (totalSeconds === 0) {
                     tr.className = "row-empty";
-                    totalCellHtml = `<td style="font-style:italic; font-size:0.75rem; color:#d97706;">-</td>`;
+                    totalCellHtml = `<td style="font-style:italic; font-size:0.75rem; color:#d97706;">Tidak Ada Absen</td>`;
+                    
+                    let optionsHtml = `<option value="">-- Pilih Alokasi Dana (40%) --</option>`;
+                    optionsHtml += `<option value="KAS">RE-ALOKASI KE KAS CADANGAN</option>`;
+                    optionsHtml += `<option value="PRODI">RE-ALOKASI KE SETORAN PRODI</option>`;
+                    optionsHtml += `<option value="MAHASISWA">DISTRIBUSI BAGI HASIL (SEMUA SDM)</option>`;
+                    optionsHtml += `<optgroup label="INSENTIF KHUSUS (PERORANGAN)">`;
+                    uniqueEmployeeList.forEach(name => {
+                        optionsHtml += `<option value="${name}">${name}</option>`;
+                    });
+                    optionsHtml += `</optgroup>`;
+
+                    shareHtml = `
+                        <div id="alloc-wrapper-${dateKey}" style="display:none;">
+                            <select class="input-xs" style="width:100%; font-size:0.75rem;" onchange="handleSpecialAllocation('${dateKey}', this.value)">
+                                ${optionsHtml}
+                            </select>
+                            <div class="text-right text-blue" id="${infoId}" style="margin-top:2px;">Rp 0</div>
+                        </div>
+                        <div id="alloc-placeholder-${dateKey}" style="font-size:0.75rem; color:#94a3b8; text-align:right;">-</div>
+                    `;
                 }
 
-                tr.innerHTML = `<td>${displayDate}</td>${totalCellHtml}<td>${inputHtml}</td>${portionHtml}`;
+                tr.innerHTML = `<td>${displayDate}</td>${totalCellHtml}<td>${inputHtml}</td><td id="${cellId}">${shareHtml}</td>`;
                 tbodyDaily.appendChild(tr);
                 currentDate.add(1, 'days');
             }
         }
-        updateEmployeeCards(); 
-        validateTotals(); 
+        updateCalculations();
     }
 
-    // --- 5. INPUT HANDLING ---
+    // --- 4. INPUT HANDLING ---
     window.handleDailyInput = function(dateKey, val) {
         tableInputs[dateKey] = parseFloat(val) || 0;
-        const infoSpan = document.getElementById(`info-${dateKey}`);
+        
+        const totalDailySeconds = dailySummarySeconds[dateKey] || 0;
         const portionMahasiswa = tableInputs[dateKey] * 0.40;
+        
+        const infoSpan = document.getElementById(`info-${dateKey}`);
         if(infoSpan) infoSpan.innerText = formatRupiah(portionMahasiswa);
 
-        const totalDailySeconds = dailySummarySeconds[dateKey] || 0;
-        const detailRows = document.querySelectorAll(`#tableHardfile tr[data-date-key="${dateKey}"]`);
+        if (totalDailySeconds === 0) {
+            const wrapper = document.getElementById(`alloc-wrapper-${dateKey}`);
+            const placeholder = document.getElementById(`alloc-placeholder-${dateKey}`);
+            if (wrapper && placeholder) {
+                if (tableInputs[dateKey] > 0) {
+                    wrapper.style.display = 'block';
+                    placeholder.style.display = 'none';
+                } else {
+                    wrapper.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    const select = wrapper.querySelector('select');
+                    if(select) {
+                        select.value = "";
+                        handleSpecialAllocation(dateKey, ""); 
+                        return; 
+                    }
+                }
+            }
+        } 
+        updateCalculations();
+    };
+
+    window.handleSpecialAllocation = function(dateKey, allocatedTo) {
+        if (allocatedTo && allocatedTo !== "") {
+            specialAllocations[dateKey] = allocatedTo;
+        } else {
+            delete specialAllocations[dateKey];
+        }
+        updateCalculations();
+    };
+
+    globalProfitInput.addEventListener('input', (e) => {
+        currentGlobalProfit = parseFloat(e.target.value) || 0;
+        updateCalculations();
+    });
+
+    // --- 5. CORE CALCULATION LOGIC ---
+    function updateCalculations() {
         
-        if (detailRows.length > 0 && totalDailySeconds > 0) {
-            detailRows.forEach(row => {
-                const userSeconds = parseFloat(row.getAttribute('data-seconds'));
-                const share = (userSeconds / totalDailySeconds) * portionMahasiswa;
-                row.querySelector('.incentive-cell').innerText = formatRupiah(share);
+        let displayMhs = currentGlobalProfit * 0.40;
+        let displayKas = currentGlobalProfit * 0.20;
+        let displayProdi = currentGlobalProfit * 0.40;
+
+        let bonusPoolMhs = 0; 
+        let totalInputRaw = 0;
+        let totalNoWorkProfit = 0;
+        let totalNoWorkAllocated = 0;
+
+        const empTempTotals = {};
+        uniqueEmployeeList.forEach(n => empTempTotals[n] = 0);
+
+        // --- LOOP UTAMA ---
+        for (const [dateKey, profit] of Object.entries(tableInputs)) {
+            if (profit <= 0) continue;
+            
+            totalInputRaw += profit;
+            const portion40 = profit * 0.40;
+            const totalSec = dailySummarySeconds[dateKey] || 0;
+
+            if (totalSec > 0) {
+                // Absensi Normal
+                const detailRows = document.querySelectorAll(`#tableHardfile tr[data-date-key="${dateKey}"]`);
+                detailRows.forEach(row => {
+                    const userSec = parseFloat(row.getAttribute('data-seconds'));
+                    const share = (userSec / totalSec) * portion40;
+                    row.querySelector('.incentive-cell').innerText = formatRupiah(share);
+                    const name = row.children[0].innerText;
+                    if(empTempTotals[name] !== undefined) empTempTotals[name] += share;
+                });
+
+            } else {
+                totalNoWorkProfit += profit;
+                totalNoWorkAllocated += portion40;
+
+                const target = specialAllocations[dateKey];
+                
+                if (target === 'KAS') {
+                    displayMhs -= portion40;
+                    displayKas += portion40;
+                } else if (target === 'PRODI') {
+                    displayMhs -= portion40;
+                    displayProdi += portion40;
+                } else if (target === 'MAHASISWA') {
+                    // Masuk Pool Bonus untuk Dibagi Rata (displayMhs tidak berubah)
+                    bonusPoolMhs += portion40; 
+                } else if (target && uniqueEmployeeList.includes(target)) {
+                    // Masuk ke Pegawai Tertentu (displayMhs tidak berubah)
+                    if(empTempTotals[target] !== undefined) empTempTotals[target] += portion40;
+                }
+            }
+        }
+
+        // --- PEMBAGIAN RATA (EQUAL SPLIT) ---
+        if (bonusPoolMhs > 0 && uniqueEmployeeList.length > 0) {
+            const equalShare = bonusPoolMhs / uniqueEmployeeList.length; // BAGI RATA
+            uniqueEmployeeList.forEach(name => {
+                empTempTotals[name] += equalShare;
             });
         }
 
-        updateEmployeeCards(); 
-        validateTotals();
-    };
+        // --- UPDATE UI CARDS ---
+        cardValMhs.innerText = formatRupiah(displayMhs);
+        cardValKas.innerText = formatRupiah(displayKas);
+        cardValProdi.innerText = formatRupiah(displayProdi);
+
+        // --- VALIDATION FOOTER ---
+        document.getElementById('totalInputLaba').innerText = formatRupiah(totalInputRaw);
+        
+        let totalDistributedToPeople = 0;
+        for (let key in empTempTotals) totalDistributedToPeople += empTempTotals[key];
+        
+        document.getElementById('summaryAllocatedMhs').innerText = formatRupiah(totalDistributedToPeople); 
+        document.getElementById('summaryNoWorkProfit').innerText = formatRupiah(totalNoWorkProfit);
+        document.getElementById('summaryNoWorkAllocated').innerText = formatRupiah(totalNoWorkAllocated);
+
+        // --- STATUS BOX LOGIC (REVISI BARU) ---
+        const statusBox = document.getElementById('statusBox');
+        
+        let pendingAllocation = false;
+        for (const [dk, profit] of Object.entries(tableInputs)) {
+            if (profit > 0 && (!dailySummarySeconds[dk] || dailySummarySeconds[dk] === 0)) {
+                if (!specialAllocations[dk] || specialAllocations[dk] === "") {
+                    pendingAllocation = true;
+                }
+            }
+        }
+
+        if (currentGlobalProfit === 0 && totalInputRaw === 0) {
+            statusBox.innerText = "MENUNGGU DATA INPUT";
+            statusBox.className = 'status-badge st-ok';
+        } else {
+            // Bandingkan Total Terbagi (Distributed) dengan Kartu Mahasiswa (displayMhs)
+            const diff = totalDistributedToPeople - displayMhs;
+
+            if (Math.abs(diff) > 500) { 
+                // KONDISI: NILAI TIDAK SAMA
+                if (diff < 0) {
+                    statusBox.innerText = `KURANG (BELUM TERBAGI): ${formatRupiah(Math.abs(diff))} ❌`;
+                    statusBox.className = 'status-badge st-err';
+                } else {
+                    statusBox.innerText = `LEBIH (OVER): +${formatRupiah(diff)} ⚠️`;
+                    statusBox.className = 'status-badge st-warn';
+                }
+            } else {
+                // KONDISI: NILAI SUDAH SAMA (BALANCE)
+                if (pendingAllocation) {
+                    statusBox.innerText = "TAMBAHKAN ALOKASI LABA TANPA ABSENSI ⚠️";
+                    statusBox.className = 'status-badge st-warn';
+                } else {
+                    statusBox.innerText = "REKONSILIASI SEIMBANG (BALANCE) ✅";
+                    statusBox.className = 'status-badge st-ok';
+                }
+            }
+        }
+
+        renderEmployeeCards(empTempTotals, bonusPoolMhs);
+    }
 
     // --- 6. RENDER CARDS ---
-    function updateEmployeeCards() {
-        const employees = {};
+    function renderEmployeeCards(empTotals, bonusPool) {
+        employeeCardsContainer.innerHTML = '';
+        const empDetails = {};
         globalExcelData.forEach(row => {
-            const name = row['Nama'] || row['nama'] || 'Tanpa Nama';
-            if (!employees[name]) employees[name] = [];
-            employees[name].push(row);
+            const name = row['Nama'] || row['nama'];
+            if(!empDetails[name]) empDetails[name] = [];
+            empDetails[name].push(row);
         });
 
-        employeeCardsContainer.innerHTML = ''; 
-        
-        Object.keys(employees).sort().forEach(name => {
-            const empData = employees[name];
-            let totalGaji = 0;
+        let equalShareDisplay = 0;
+        if (bonusPool > 0 && uniqueEmployeeList.length > 0) {
+            equalShareDisplay = bonusPool / uniqueEmployeeList.length;
+        }
+
+        uniqueEmployeeList.forEach(name => {
+            const totalGaji = empTotals[name] || 0;
+            const details = empDetails[name] || [];
 
             const card = document.createElement('div');
             card.className = 'emp-section';
 
             let tableHtml = `
                 <div class="emp-head">
-                    <i class="fa-solid fa-user-circle" style="color:#001f8f;"></i>
+                    <i class="fa-solid fa-user-circle" style="color:#0f172a;"></i>
                     <span class="emp-name">${name}</span>
-                    <span class="emp-total" id="total-${name.replace(/\s/g, '')}">TOTAL: Rp 0</span>
+                    <span class="emp-total">TOTAL: ${formatRupiah(totalGaji)}</span>
                 </div>
                 <table>
                     <thead>
                         <tr>
                             <th style="width:20%">TGL</th>
                             <th style="width:15%">SHIFT</th>
-                            <th style="width:15%">JAM KERJA </th>
-                            <th style="width:20%">LAMA BUKA</th>
-                            <th style="width:30%; text-align:right;">GAJI DITERIMA</th>
+                            <th style="width:15%">JAM</th>
+                            <th style="width:20%">SUMBER DANA</th>
+                            <th style="width:30%; text-align:right;">NOMINAL</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
 
-            empData.sort((a, b) => a._normalizedDateKey.localeCompare(b._normalizedDateKey));
-            
-            empData.forEach(row => {
+            // Row 1: Absensi
+            details.forEach(row => {
                 const dateKey = row._normalizedDateKey;
-                const totalDailySeconds = dailySummarySeconds[dateKey] || 0;
-                const totalDailyProfit = tableInputs[dateKey] || 0;
-                const portionMahasiswa = totalDailyProfit * 0.40;
+                const totalSec = dailySummarySeconds[dateKey] || 0;
+                const profit = tableInputs[dateKey] || 0;
                 
-                const userSeconds = timeStringToSeconds(row['Total Jam Kerja']);
-                let gajiHarian = 0;
-
-                if (totalDailySeconds > 0) {
-                    gajiHarian = (userSeconds / totalDailySeconds) * portionMahasiswa;
+                if (totalSec > 0 && profit > 0) {
+                    const userSec = timeStringToSeconds(row['Total Jam Kerja']);
+                    const share = (userSec / totalSec) * (profit * 0.40);
+                    
+                    tableHtml += `
+                        <tr>
+                            <td>${row._displayDate}</td>
+                            <td>${row['Shift'] || '-'}</td>
+                            <td>${row['Total Jam Kerja']}</td>
+                            <td class="text-gray">Insentif Absensi</td>
+                            <td class="text-right text-bold text-green">${formatRupiah(share)}</td>
+                        </tr>
+                    `;
                 }
-                totalGaji += gajiHarian;
+            });
 
+            // Row 2: Limbahan Manual
+            for (const [dateKey, target] of Object.entries(specialAllocations)) {
+                if (target === name) {
+                    const profit = tableInputs[dateKey] || 0;
+                    const share = profit * 0.40;
+                    const displayDate = moment(dateKey).format('DD/MM/YYYY');
+                    
+                    tableHtml += `
+                        <tr style="background:#fff7ed;">
+                            <td>${displayDate}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:#d97706; font-weight:bold;">Insentif Khusus</td>
+                            <td class="text-right text-bold text-green">${formatRupiah(share)}</td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Row 3: Bonus Bagi Rata
+            if (equalShareDisplay > 0) {
                 tableHtml += `
-                    <tr>
-                        <td>${row._displayDate}</td>
-                        <td>${row['Shift'] || '-'}</td>
-                        <td>${row['Total Jam Kerja']}</td>
-                        <td class="text-gray">${secondsToHMS(totalDailySeconds)}</td>
-                        <td class="text-right text-bold text-green">${formatRupiah(gajiHarian)}</td>
+                    <tr style="background:#f0fdf4;">
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td style="color:#166534; font-weight:bold;">Bagi Hasil Merata</td>
+                        <td class="text-right text-bold text-green">${formatRupiah(equalShareDisplay)}</td>
                     </tr>
                 `;
-            });
+            }
 
             tableHtml += `</tbody></table>`;
             card.innerHTML = tableHtml;
-            card.querySelector('.emp-total').innerText = "TOTAL: " + formatRupiah(totalGaji);
             employeeCardsContainer.appendChild(card);
         });
     }
 
-    // --- 7. VALIDATION ---
-    function validateTotals() {
-        let totalInputRaw = 0;
-        let totalNoWorkProfit = 0; 
-        for (const [key, val] of Object.entries(tableInputs)) {
-            totalInputRaw += val;
-            if (!dailySummarySeconds[key] || dailySummarySeconds[key] === 0) totalNoWorkProfit += val;
-        }
-        
-        let totalAllocatedMhs = totalInputRaw * 0.40;
-        let targetGlobalMhs = currentGlobalProfit * 0.40;
-        let difference = totalAllocatedMhs - targetGlobalMhs;
-
-        document.getElementById('totalInputLaba').innerText = formatRupiah(totalInputRaw);
-        document.getElementById('summaryAllocatedMhs').innerText = formatRupiah(totalAllocatedMhs);
-        document.getElementById('summaryNoWorkProfit').innerText = formatRupiah(totalNoWorkProfit);
-        document.getElementById('summaryNoWorkAllocated').innerText = formatRupiah(totalNoWorkProfit * 0.40);
-
-        const statusBox = document.getElementById('statusBox');
-        statusBox.className = 'status-badge'; 
-
-        if (currentGlobalProfit === 0 && totalInputRaw === 0) {
-            statusBox.innerText = "MENUNGGU INPUT DATA";
-            statusBox.classList.add('st-ok');
-            return;
-        }
-
-        if (Math.abs(difference) < 100) {
-            statusBox.innerText = "BALANCE (SESUAI) ✅";
-            statusBox.classList.add('st-ok');
-        } else if (difference < 0) {
-            statusBox.innerText = `KURANG (-) ${formatRupiah(Math.abs(difference))} ❌`;
-            statusBox.classList.add('st-err'); 
-        } else {
-            statusBox.innerText = `LEBIH (+) ${formatRupiah(difference)} ⚠️`;
-            statusBox.classList.add('st-warn'); 
-        }
-    }
-
-    // --- 8. EXPORT EXCEL (4 SHEETS) ---
+    // --- 7. EXPORT EXCEL ---
     function exportToExcel() {
-        if (!dateRange.min || !dateRange.max) { alert("Tidak ada data!"); return; }
+        if (!dateRange.min) { alert("Tidak ada data untuk diexport!"); return; }
 
         const wb = XLSX.utils.book_new();
 
-        // --- SHEET 1: Ringkasan ---
-        let totalInputRaw = 0;
-        let totalNoWorkProfit = 0;
-        for (const [key, val] of Object.entries(tableInputs)) {
-            totalInputRaw += val;
-            if (!dailySummarySeconds[key] || dailySummarySeconds[key] === 0) totalNoWorkProfit += val;
-        }
-        let targetGlobalMhs = currentGlobalProfit * 0.40;
-        let totalAllocatedMhs = totalInputRaw * 0.40;
-        let difference = totalAllocatedMhs - targetGlobalMhs;
-        let status = Math.abs(difference) < 100 ? "BALANCE" : (difference < 0 ? "KURANG" : "LEBIH");
+        // -- RECALC FOR EXPORT --
+        let finalCardMhs = currentGlobalProfit * 0.40;
+        let finalCardKas = currentGlobalProfit * 0.20;
+        let finalCardProdi = currentGlobalProfit * 0.40;
 
+        let bonusPoolMhs = 0;
+        let totalInput = 0;
+        
+        const empFinalTotals = {};
+        uniqueEmployeeList.forEach(n => empFinalTotals[n] = 0);
+
+        for (const [dateKey, profit] of Object.entries(tableInputs)) {
+            if(profit <= 0) continue;
+            totalInput += profit;
+            const p40 = profit * 0.40;
+            const totalSec = dailySummarySeconds[dateKey] || 0;
+
+            if (totalSec > 0) {
+                const detailRows = document.querySelectorAll(`#tableHardfile tr[data-date-key="${dateKey}"]`);
+                detailRows.forEach(row => {
+                    const userSec = parseFloat(row.getAttribute('data-seconds'));
+                    const share = (userSec / totalSec) * p40;
+                    const name = row.children[0].innerText;
+                    empFinalTotals[name] += share;
+                });
+            } else {
+                const target = specialAllocations[dateKey];
+                if (target === 'KAS') {
+                    finalCardMhs -= p40;
+                    finalCardKas += p40;
+                } else if (target === 'PRODI') {
+                    finalCardMhs -= p40;
+                    finalCardProdi += p40;
+                } else if (target === 'MAHASISWA') {
+                    bonusPoolMhs += p40; 
+                } else if (target && uniqueEmployeeList.includes(target)) {
+                    empFinalTotals[target] += p40;
+                }
+            }
+        }
+
+        let equalShareExport = 0;
+        if (bonusPoolMhs > 0 && uniqueEmployeeList.length > 0) {
+            equalShareExport = bonusPoolMhs / uniqueEmployeeList.length;
+            uniqueEmployeeList.forEach(name => {
+                empFinalTotals[name] += equalShareExport;
+            });
+        }
+
+        // 1. RINGKASAN
         const summaryData = [
             ["LAPORAN DISTRIBUSI PROFIT"], [""],
-            ["Target Profit Global", currentGlobalProfit],
-            ["Target Laba Mhs (40%)", targetGlobalMhs],
-            ["Target Kas (20%)", currentGlobalProfit * 0.20],
-            ["Target Prodi (40%)", currentGlobalProfit * 0.40],
+            ["POSISI KEUANGAN AKHIR"],
+            ["Total Laba Bersih (Net Profit)", currentGlobalProfit],
+            ["Saldo Akhir Dana SDM", finalCardMhs],
+            ["Saldo Akhir Kas Cadangan", finalCardKas],
+            ["Saldo Akhir Setoran Prodi", finalCardProdi],
             [""],
-            ["RINGKASAN REALISASI"],
-            ["Total Input Laba", totalInputRaw],
-            ["Total Dana Terbagi ke Mahasiswa ", totalAllocatedMhs],
-            ["Total Laba Tanpa Absensi", totalNoWorkProfit],
-            ["Total Laba Tanpa Absensi (40%)", totalNoWorkProfit * 0.40],
-            [""],
-            ["STATUS", status],
-            ["Selisih", difference]
+            ["REALISASI HARIAN"],
+            ["Total Revenue Harian Tercatat", totalInput]
         ];
-        const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-        XLSX.utils.book_append_sheet(wb, wsSummary, "Ringkasan");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), "Ringkasan Eksekutif");
 
-        // --- SHEET 2: Laporan Harian ---
-        const sheet1Data = [["TANGGAL", "TOTAL JAM BUKA", "INPUT LABA", "JATAH MAHASISWA (40%)", "STATUS"]];
-        let currentDate = dateRange.min.clone();
+        // 2. LAPORAN HARIAN
+        const sheetDaily = [["TANGGAL", "DURASI OPS", "REVENUE HARIAN", "ALOKASI SDM (40%)", "STATUS / ALOKASI"]];
+        let curr = dateRange.min.clone();
         const end = dateRange.max.clone();
-        while (currentDate.isSameOrBefore(end)) {
-            const dateKey = currentDate.format('YYYY-MM-DD');
-            const totalSec = dailySummarySeconds[dateKey] || 0;
-            const profit = tableInputs[dateKey] || 0;
-            sheet1Data.push([
-                currentDate.format('DD/MM/YYYY'), secondsToHMS(totalSec), profit, profit * 0.40, (totalSec === 0 ? "TIDAK ADA ABSENSI" : "BUKA")
-            ]);
-            currentDate.add(1, 'days');
-        }
-        const ws1 = XLSX.utils.aoa_to_sheet(sheet1Data);
-        XLSX.utils.book_append_sheet(wb, ws1, "Laporan Harian");
-
-        // --- SHEET 3: Rincian Mahasiswa ---
-        const sheet2Data = [["NAMA", "TANGGAL", "SHIFT", "JAM KERJA", "LABA HARIAN", "INSENTIF"]];
-        
-        // Variabel untuk menampung total per orang (Untuk Sheet 4)
-        const totalGajiPerOrang = {};
-
-        globalExcelData.forEach(row => {
-            const dateKey = row._normalizedDateKey;
-            const totalDailySeconds = dailySummarySeconds[dateKey] || 0;
-            const profit = tableInputs[dateKey] || 0;
-            const portionMhs = profit * 0.40;
-            let incentive = 0;
-            const userSeconds = timeStringToSeconds(row['Total Jam Kerja']);
-            if(totalDailySeconds > 0) incentive = (userSeconds / totalDailySeconds) * portionMhs;
+        while(curr.isSameOrBefore(end)){
+            const dk = curr.format('YYYY-MM-DD');
+            const sec = dailySummarySeconds[dk]||0;
+            const prof = tableInputs[dk]||0;
+            let status = (sec===0) ? "LIBUR / NON-OPS" : "OPERASIONAL";
             
-            // Masukkan ke Sheet 3
-            sheet2Data.push([
-                row['Nama'], row._displayDate, row['Shift'], row['Total Jam Kerja'], profit, incentive
+            if (sec === 0 && prof > 0) {
+                const alloc = specialAllocations[dk] || "PENDING";
+                status = `RE-ALOKASI KE: ${alloc}`;
+            }
+
+            sheetDaily.push([
+                curr.format('DD/MM/YYYY'), secondsToHMS(sec), prof, prof*0.40, status
             ]);
+            curr.add(1, 'days');
+        }
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetDaily), "Jurnal Harian");
 
-            // Hitung akumulasi untuk Sheet 4
-            const nama = row['Nama'] || "Tanpa Nama";
-            if(!totalGajiPerOrang[nama]) totalGajiPerOrang[nama] = 0;
-            totalGajiPerOrang[nama] += incentive;
+        // 3. RINCIAN PEGAWAI
+        const sheetDet = [["NAMA SDM", "TANGGAL", "JENIS TRANSAKSI", "JAM KERJA", "NOMINAL"]];
+        globalExcelData.forEach(row => {
+            const dk = row._normalizedDateKey;
+            const sec = dailySummarySeconds[dk]||0;
+            const prof = tableInputs[dk]||0;
+            if(sec > 0 && prof > 0) {
+                const uSec = timeStringToSeconds(row['Total Jam Kerja']);
+                const share = (uSec/sec)*(prof*0.40);
+                sheetDet.push([row['Nama'], row._displayDate, "INSENTIF ABSENSI", row['Total Jam Kerja'], share]);
+            }
         });
-        const ws2 = XLSX.utils.aoa_to_sheet(sheet2Data);
-        XLSX.utils.book_append_sheet(wb, ws2, "Rincian Mahasiswa");
-
-        // --- SHEET 4: Total Gaji Mahasiswa (BARU) ---
-        const sheet4Data = [["NAMA MAHASISWA", "TOTAL GAJI DITERIMA"]];
         
-        // Urutkan nama secara abjad
-        Object.keys(totalGajiPerOrang).sort().forEach(nama => {
-            sheet4Data.push([nama, totalGajiPerOrang[nama]]);
+        for (const [dk, target] of Object.entries(specialAllocations)) {
+            const prof = tableInputs[dk]||0;
+            if (target === 'MAHASISWA') {
+                sheetDet.push(["SELURUH SDM", moment(dk).format('DD/MM/YYYY'), "BAGI HASIL MERATA", "-", prof*0.40]);
+            } else if (target && uniqueEmployeeList.includes(target)) {
+                sheetDet.push([target, moment(dk).format('DD/MM/YYYY'), "INSENTIF KHUSUS", "-", prof*0.40]);
+            }
+        }
+        
+        if(equalShareExport > 0) {
+            sheetDet.push(["", "", "", "", ""]);
+            sheetDet.push(["INFO BAGI HASIL", "TOTAL DANA: " + bonusPoolMhs, "JML PENERIMA: " + uniqueEmployeeList.length, "PER ORANG:", equalShareExport]);
+        }
+
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetDet), "Rincian Transaksi SDM");
+
+        // 4. TOTAL GAJI
+        const sheetTotal = [["NAMA SDM", "TOTAL TAKE HOME PAY"]];
+        Object.keys(empFinalTotals).sort().forEach(n => {
+            sheetTotal.push([n, empFinalTotals[n]]);
         });
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetTotal), "Rekap Gaji Akhir");
 
-        const ws4 = XLSX.utils.aoa_to_sheet(sheet4Data);
-        XLSX.utils.book_append_sheet(wb, ws4, "Total Gaji Mahasiswa");
-
-        // --- EXPORT FILE ---
-        const finalName = "HASIL_REKAP_" + uploadedFileName + ".xlsx";
-        XLSX.writeFile(wb, finalName);
+        XLSX.writeFile(wb, "HASIL_REKAP_" + uploadedFileName + ".xlsx");
     }
-    </script>
+</script>
 </body>
 </html>
