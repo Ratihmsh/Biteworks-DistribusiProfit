@@ -70,7 +70,7 @@
             background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;
         }
         .daily-header { padding: 10px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 0.85rem; color: #475569; }
-        .daily-scroll-area { flex: 1; overflow-y: auto; }
+        .daily-scroll-area { flex: 1; overflow-y: auto; padding-bottom: 100px; /* Space for dropdown */ }
 
         /* Validation Footer */
         .validation-footer {
@@ -169,6 +169,34 @@
         .text-blue { color: #2563eb; font-weight: 700; }
         .row-empty { background: #fff7ed; }
 
+        /* --- 7. NEW: MULTI SELECT STYLES --- */
+        .ms-wrapper { position: relative; width: 100%; }
+        .ms-display {
+            padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px;
+            font-size: 0.75rem; background: white; cursor: pointer; position: relative;
+            color: #475569; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+        }
+        .ms-display:hover { border-color: #2563eb; }
+        .ms-display.active { border-color: #2563eb; ring: 2px solid #93c5fd; }
+        
+        .ms-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+            background: white; border: 1px solid #cbd5e1; border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 2px;
+            max-height: 200px; overflow-y: auto; display: none;
+        }
+        .ms-dropdown.show { display: block; }
+        .ms-option {
+            padding: 6px 10px; display: flex; align-items: center; gap: 8px;
+            border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 0.75rem;
+        }
+        .ms-option:hover { background: #f8fafc; }
+        .ms-option input[type="checkbox"] { cursor: pointer; }
+        
+        .ms-summary {
+            font-size: 0.7rem; color: #059669; font-weight: bold; margin-top: 2px; text-align: right;
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -224,8 +252,8 @@
                             <tr>
                                 <th style="width: 20%;">TGL</th>
                                 <th style="width: 15%;">JAM</th>
-                                <th style="width: 35%;">REVENUE HARIAN</th>
-                                <th style="width: 30%; text-align:right;">ALOKASI SDM (40%)</th>
+                                <th style="width: 30%;">REVENUE HARIAN</th>
+                                <th style="width: 35%; text-align:right;">ALOKASI SDM (40%)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -302,6 +330,7 @@
     let dailySummarySeconds = {}; 
     let globalExcelData = [];
     let uniqueEmployeeList = []; 
+    // CHANGE: specialAllocations now holds Array of strings: { '2023-01-01': ['KAS', 'BUDI'] }
     let specialAllocations = {}; 
     let dateRange = { min: null, max: null };
     let uploadedFileName = "Data_Absensi"; 
@@ -482,21 +511,14 @@
                     tr.className = "row-empty";
                     totalCellHtml = `<td style="font-style:italic; font-size:0.75rem; color:#d97706;">Tidak Ada Absen</td>`;
                     
-                    let optionsHtml = `<option value="">-- Pilih Alokasi Dana (40%) --</option>`;
-                    optionsHtml += `<option value="KAS">RE-ALOKASI KE KAS CADANGAN</option>`;
-                    optionsHtml += `<option value="PRODI">RE-ALOKASI KE SETORAN PRODI</option>`;
-                    optionsHtml += `<option value="MAHASISWA">DISTRIBUSI BAGI HASIL (SEMUA SDM)</option>`;
-                    optionsHtml += `<optgroup label="INSENTIF KHUSUS (PERORANGAN)">`;
-                    uniqueEmployeeList.forEach(name => {
-                        optionsHtml += `<option value="${name}">${name}</option>`;
-                    });
-                    optionsHtml += `</optgroup>`;
-
+                    // --- MULTI SELECT DROPDOWN LOGIC ---
                     shareHtml = `
-                        <div id="alloc-wrapper-${dateKey}" style="display:none;">
-                            <select class="input-xs" style="width:100%; font-size:0.75rem;" onchange="handleSpecialAllocation('${dateKey}', this.value)">
-                                ${optionsHtml}
-                            </select>
+                        <div id="alloc-wrapper-${dateKey}" style="display:none;" class="ms-wrapper">
+                            <div class="ms-display" id="ms-disp-${dateKey}" onclick="toggleMs('${dateKey}')">-- Pilih Alokasi --</div>
+                            <div class="ms-dropdown" id="ms-drop-${dateKey}">
+                                ${generateMultiSelectOptions(dateKey)}
+                            </div>
+                            <div class="ms-summary" id="ms-sum-${dateKey}"></div>
                             <div class="text-right text-blue" id="${infoId}" style="margin-top:2px;">Rp 0</div>
                         </div>
                         <div id="alloc-placeholder-${dateKey}" style="font-size:0.75rem; color:#94a3b8; text-align:right;">-</div>
@@ -508,10 +530,83 @@
                 currentDate.add(1, 'days');
             }
         }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.ms-wrapper')) {
+                document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('show'));
+            }
+        });
+        
         updateCalculations();
     }
 
-    // --- 4. INPUT HANDLING ---
+    // --- 4. MULTI SELECT LOGIC ---
+    function generateMultiSelectOptions(dateKey) {
+        let html = '';
+        const options = [
+            {val: 'KAS', label: 'KAS CADANGAN'},
+            {val: 'PRODI', label: 'SETORAN PRODI'},
+            {val: 'MAHASISWA', label: 'DISTRIBUSI SEMUA SDM'},
+            // Separator
+        ];
+        
+        options.forEach(opt => {
+            html += `
+                <label class="ms-option">
+                    <input type="checkbox" value="${opt.val}" onchange="handleMsChange('${dateKey}', this)">
+                    ${opt.label}
+                </label>
+            `;
+        });
+        
+        html += `<div style="padding:5px 10px; background:#f1f5f9; font-size:0.7rem; font-weight:bold; color:#64748b;">PEGAWAI:</div>`;
+        
+        uniqueEmployeeList.forEach(name => {
+            html += `
+                <label class="ms-option">
+                    <input type="checkbox" value="${name}" onchange="handleMsChange('${dateKey}', this)">
+                    ${name}
+                </label>
+            `;
+        });
+        return html;
+    }
+
+    window.toggleMs = function(dateKey) {
+        const drop = document.getElementById(`ms-drop-${dateKey}`);
+        const allDrops = document.querySelectorAll('.ms-dropdown');
+        allDrops.forEach(d => { if(d !== drop) d.classList.remove('show'); });
+        if(drop) drop.classList.toggle('show');
+    };
+
+    window.handleMsChange = function(dateKey, checkbox) {
+        if (!specialAllocations[dateKey]) specialAllocations[dateKey] = [];
+        
+        if (checkbox.checked) {
+            if (!specialAllocations[dateKey].includes(checkbox.value)) {
+                specialAllocations[dateKey].push(checkbox.value);
+            }
+        } else {
+            specialAllocations[dateKey] = specialAllocations[dateKey].filter(item => item !== checkbox.value);
+        }
+
+        // Update Display Text
+        const disp = document.getElementById(`ms-disp-${dateKey}`);
+        const count = specialAllocations[dateKey].length;
+        
+        if (count === 0) {
+            disp.innerText = "-- Pilih Alokasi --";
+            disp.classList.remove('active');
+        } else {
+            disp.innerText = `${count} Tujuan Dipilih`;
+            disp.classList.add('active');
+        }
+        
+        updateCalculations();
+    };
+
+    // --- 5. INPUT HANDLING ---
     window.handleDailyInput = function(dateKey, val) {
         tableInputs[dateKey] = parseFloat(val) || 0;
         
@@ -531,24 +626,18 @@
                 } else {
                     wrapper.style.display = 'none';
                     placeholder.style.display = 'block';
-                    const select = wrapper.querySelector('select');
-                    if(select) {
-                        select.value = "";
-                        handleSpecialAllocation(dateKey, ""); 
-                        return; 
+                    // Reset Checkboxes if 0
+                    if (specialAllocations[dateKey]) {
+                        specialAllocations[dateKey] = [];
+                        const drop = document.getElementById(`ms-drop-${dateKey}`);
+                        if(drop) {
+                            drop.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                            handleMsChange(dateKey, {checked:false, value:''}); // dummy trigger to reset text
+                        }
                     }
                 }
             }
         } 
-        updateCalculations();
-    };
-
-    window.handleSpecialAllocation = function(dateKey, allocatedTo) {
-        if (allocatedTo && allocatedTo !== "") {
-            specialAllocations[dateKey] = allocatedTo;
-        } else {
-            delete specialAllocations[dateKey];
-        }
         updateCalculations();
     };
 
@@ -557,7 +646,7 @@
         updateCalculations();
     });
 
-    // --- 5. CORE CALCULATION LOGIC ---
+    // --- 6. CORE CALCULATION LOGIC ---
     function updateCalculations() {
         
         let displayMhs = currentGlobalProfit * 0.40;
@@ -592,30 +681,46 @@
                 });
 
             } else {
+                // LOGIC BARU: SPLIT ALLOCATION
                 totalNoWorkProfit += profit;
                 totalNoWorkAllocated += portion40;
 
-                const target = specialAllocations[dateKey];
-                
-                if (target === 'KAS') {
-                    displayMhs -= portion40;
-                    displayKas += portion40;
-                } else if (target === 'PRODI') {
-                    displayMhs -= portion40;
-                    displayProdi += portion40;
-                } else if (target === 'MAHASISWA') {
-                    // Masuk Pool Bonus untuk Dibagi Rata (displayMhs tidak berubah)
-                    bonusPoolMhs += portion40; 
-                } else if (target && uniqueEmployeeList.includes(target)) {
-                    // Masuk ke Pegawai Tertentu (displayMhs tidak berubah)
-                    if(empTempTotals[target] !== undefined) empTempTotals[target] += portion40;
+                const targets = specialAllocations[dateKey] || [];
+                const targetCount = targets.length;
+
+                // Update text helper
+                const summaryDiv = document.getElementById(`ms-sum-${dateKey}`);
+                if (summaryDiv) {
+                    if (targetCount > 0) {
+                        summaryDiv.innerText = `(${formatRupiah(portion40/targetCount)} / opsi)`;
+                    } else {
+                        summaryDiv.innerText = "";
+                    }
+                }
+
+                if (targetCount > 0) {
+                    const splitAmount = portion40 / targetCount;
+
+                    targets.forEach(target => {
+                        if (target === 'KAS') {
+                            displayMhs -= splitAmount;
+                            displayKas += splitAmount;
+                        } else if (target === 'PRODI') {
+                            displayMhs -= splitAmount;
+                            displayProdi += splitAmount;
+                        } else if (target === 'MAHASISWA') {
+                            bonusPoolMhs += splitAmount; 
+                        } else if (target && uniqueEmployeeList.includes(target)) {
+                            if(empTempTotals[target] !== undefined) empTempTotals[target] += splitAmount;
+                        }
+                    });
                 }
             }
         }
 
         // --- PEMBAGIAN RATA (EQUAL SPLIT) ---
         if (bonusPoolMhs > 0 && uniqueEmployeeList.length > 0) {
-            const equalShare = bonusPoolMhs / uniqueEmployeeList.length; // BAGI RATA
+            const equalShare = bonusPoolMhs / uniqueEmployeeList.length; 
             uniqueEmployeeList.forEach(name => {
                 empTempTotals[name] += equalShare;
             });
@@ -642,7 +747,7 @@
         let pendingAllocation = false;
         for (const [dk, profit] of Object.entries(tableInputs)) {
             if (profit > 0 && (!dailySummarySeconds[dk] || dailySummarySeconds[dk] === 0)) {
-                if (!specialAllocations[dk] || specialAllocations[dk] === "") {
+                if (!specialAllocations[dk] || specialAllocations[dk].length === 0) {
                     pendingAllocation = true;
                 }
             }
@@ -652,11 +757,9 @@
             statusBox.innerText = "MENUNGGU DATA INPUT";
             statusBox.className = 'status-badge st-ok';
         } else {
-            // Bandingkan Total Terbagi (Distributed) dengan Kartu Mahasiswa (displayMhs)
             const diff = totalDistributedToPeople - displayMhs;
 
             if (Math.abs(diff) > 500) { 
-                // KONDISI: NILAI TIDAK SAMA
                 if (diff < 0) {
                     statusBox.innerText = `KURANG (BELUM TERBAGI): ${formatRupiah(Math.abs(diff))} ❌`;
                     statusBox.className = 'status-badge st-err';
@@ -665,9 +768,8 @@
                     statusBox.className = 'status-badge st-warn';
                 }
             } else {
-                // KONDISI: NILAI SUDAH SAMA (BALANCE)
                 if (pendingAllocation) {
-                    statusBox.innerText = "TAMBAHKAN ALOKASI LABA TANPA ABSENSI ⚠️";
+                    statusBox.innerText = "PILIH TUJUAN ALOKASI DI TABEL ⚠️";
                     statusBox.className = 'status-badge st-warn';
                 } else {
                     statusBox.innerText = "REKONSILIASI SEIMBANG (BALANCE) ✅";
@@ -679,20 +781,17 @@
         renderEmployeeCards(empTempTotals, bonusPoolMhs);
     }
 
-    // --- 6. RENDER CARDS ---
+    // --- 7. RENDER CARDS ---
     function renderEmployeeCards(empTotals, bonusPool) {
         employeeCardsContainer.innerHTML = '';
         const empDetails = {};
+        
+        // Group data absensi by name
         globalExcelData.forEach(row => {
             const name = row['Nama'] || row['nama'];
             if(!empDetails[name]) empDetails[name] = [];
             empDetails[name].push(row);
         });
-
-        let equalShareDisplay = 0;
-        if (bonusPool > 0 && uniqueEmployeeList.length > 0) {
-            equalShareDisplay = bonusPool / uniqueEmployeeList.length;
-        }
 
         uniqueEmployeeList.forEach(name => {
             const totalGaji = empTotals[name] || 0;
@@ -720,7 +819,7 @@
                     <tbody>
             `;
 
-            // Row 1: Absensi
+            // 1. Render Baris Absensi (Insentif Kerja)
             details.forEach(row => {
                 const dateKey = row._normalizedDateKey;
                 const totalSec = dailySummarySeconds[dateKey] || 0;
@@ -742,36 +841,43 @@
                 }
             });
 
-            // Row 2: Limbahan Manual
-            for (const [dateKey, target] of Object.entries(specialAllocations)) {
-                if (target === name) {
-                    const profit = tableInputs[dateKey] || 0;
-                    const share = profit * 0.40;
-                    const displayDate = moment(dateKey).format('DD/MM/YYYY');
-                    
+            // 2. Render Baris Alokasi Manual (Split) & Bagi Hasil Merata
+            // Kita loop berdasarkan tanggal alokasi agar tanggalnya muncul
+            for (const [dateKey, targets] of Object.entries(specialAllocations)) {
+                if (!targets || targets.length === 0) continue;
+
+                const profit = tableInputs[dateKey] || 0;
+                const portion40 = profit * 0.40;
+                const splitAmount = portion40 / targets.length; // Nilai per "centang"
+                const displayDate = moment(dateKey).format('DD/MM/YYYY');
+
+                // KASUS A: Nama Pegawai ini dipilih secara spesifik (Insentif Khusus)
+                if (targets.includes(name)) {
                     tableHtml += `
                         <tr style="background:#fff7ed;">
                             <td>${displayDate}</td>
                             <td>-</td>
                             <td>-</td>
-                            <td style="color:#d97706; font-weight:bold;">Insentif Khusus</td>
-                            <td class="text-right text-bold text-green">${formatRupiah(share)}</td>
+                            <td style="color:#d97706; font-weight:bold;">Insentif Khusus (Split)</td>
+                            <td class="text-right text-bold text-green">${formatRupiah(splitAmount)}</td>
                         </tr>
                     `;
                 }
-            }
 
-            // Row 3: Bonus Bagi Rata
-            if (equalShareDisplay > 0) {
-                tableHtml += `
-                    <tr style="background:#f0fdf4;">
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td style="color:#166534; font-weight:bold;">Bagi Hasil Merata</td>
-                        <td class="text-right text-bold text-green">${formatRupiah(equalShareDisplay)}</td>
-                    </tr>
-                `;
+                // KASUS B: Pilihan 'MAHASISWA' dicentang (Bagi Hasil Merata ke Semua)
+                if (targets.includes('MAHASISWA')) {
+                    const sharePerPerson = splitAmount / uniqueEmployeeList.length;
+                    
+                    tableHtml += `
+                        <tr style="background:#f0fdf4;">
+                            <td>${displayDate}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td style="color:#166534; font-weight:bold;">Bagi Hasil Merata</td>
+                            <td class="text-right text-bold text-green">${formatRupiah(sharePerPerson)}</td>
+                        </tr>
+                    `;
+                }
             }
 
             tableHtml += `</tbody></table>`;
@@ -779,19 +885,17 @@
             employeeCardsContainer.appendChild(card);
         });
     }
-
-    // --- 7. EXPORT EXCEL ---
+    
+    // --- 8. EXPORT EXCEL ---
     function exportToExcel() {
         if (!dateRange.min) { alert("Tidak ada data untuk diexport!"); return; }
 
         const wb = XLSX.utils.book_new();
 
-        // -- RECALC FOR EXPORT --
+        // --- PERSIAPAN DATA HITUNGAN (Sama seperti sebelumnya) ---
         let finalCardMhs = currentGlobalProfit * 0.40;
         let finalCardKas = currentGlobalProfit * 0.20;
         let finalCardProdi = currentGlobalProfit * 0.40;
-
-        let bonusPoolMhs = 0;
         let totalInput = 0;
         
         const empFinalTotals = {};
@@ -804,6 +908,7 @@
             const totalSec = dailySummarySeconds[dateKey] || 0;
 
             if (totalSec > 0) {
+                // Absensi
                 const detailRows = document.querySelectorAll(`#tableHardfile tr[data-date-key="${dateKey}"]`);
                 detailRows.forEach(row => {
                     const userSec = parseFloat(row.getAttribute('data-seconds'));
@@ -812,30 +917,31 @@
                     empFinalTotals[name] += share;
                 });
             } else {
-                const target = specialAllocations[dateKey];
-                if (target === 'KAS') {
-                    finalCardMhs -= p40;
-                    finalCardKas += p40;
-                } else if (target === 'PRODI') {
-                    finalCardMhs -= p40;
-                    finalCardProdi += p40;
-                } else if (target === 'MAHASISWA') {
-                    bonusPoolMhs += p40; 
-                } else if (target && uniqueEmployeeList.includes(target)) {
-                    empFinalTotals[target] += p40;
+                // Alokasi Manual
+                const targets = specialAllocations[dateKey] || [];
+                if (targets.length > 0) {
+                    const splitAmount = p40 / targets.length;
+                    targets.forEach(target => {
+                         if (target === 'KAS') {
+                            finalCardMhs -= splitAmount;
+                            finalCardKas += splitAmount;
+                        } else if (target === 'PRODI') {
+                            finalCardMhs -= splitAmount;
+                            finalCardProdi += splitAmount;
+                        } else if (target === 'MAHASISWA') {
+                            const perPerson = splitAmount / uniqueEmployeeList.length;
+                            uniqueEmployeeList.forEach(n => empFinalTotals[n] += perPerson);
+                        } else if (target && uniqueEmployeeList.includes(target)) {
+                            empFinalTotals[target] += splitAmount;
+                        }
+                    });
                 }
             }
         }
 
-        let equalShareExport = 0;
-        if (bonusPoolMhs > 0 && uniqueEmployeeList.length > 0) {
-            equalShareExport = bonusPoolMhs / uniqueEmployeeList.length;
-            uniqueEmployeeList.forEach(name => {
-                empFinalTotals[name] += equalShareExport;
-            });
-        }
-
-        // 1. RINGKASAN
+        // ============================================================
+        // SHEET 1: RINGKASAN EKSEKUTIF
+        // ============================================================
         const summaryData = [
             ["LAPORAN DISTRIBUSI PROFIT"], [""],
             ["POSISI KEUANGAN AKHIR"],
@@ -849,7 +955,29 @@
         ];
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), "Ringkasan Eksekutif");
 
-        // 2. LAPORAN HARIAN
+        // ============================================================
+        // SHEET 2: DATA MENTAH (INPUT ASLI) - BARU!
+        // ============================================================
+        // Kita ambil langsung dari variabel globalExcelData
+        // Kita buat salinan agar data internal (yg diawali underscore) bisa kita buang jika mau agar rapi
+        // Tapi untuk persis sama, kita dump saja langsung, atau filter sedikit.
+        
+        // Opsi Rapi: Hanya ambil kolom asli (Nama, Tanggal, Shift, Jam Kerja, dll)
+        const cleanRawData = globalExcelData.map(row => {
+            const cleanRow = {...row};
+            // Hapus properti internal sistem (helper) agar Excel bersih
+            delete cleanRow._normalizedDateKey;
+            delete cleanRow._displayDate;
+            delete cleanRow.__rowNum__;
+            return cleanRow;
+        });
+
+        const rawSheet = XLSX.utils.json_to_sheet(cleanRawData);
+        XLSX.utils.book_append_sheet(wb, rawSheet, "Input Absensi");
+
+        // ============================================================
+        // SHEET 3: JURNAL HARIAN
+        // ============================================================
         const sheetDaily = [["TANGGAL", "DURASI OPS", "REVENUE HARIAN", "ALOKASI SDM (40%)", "STATUS / ALOKASI"]];
         let curr = dateRange.min.clone();
         const end = dateRange.max.clone();
@@ -860,8 +988,9 @@
             let status = (sec===0) ? "LIBUR / NON-OPS" : "OPERASIONAL";
             
             if (sec === 0 && prof > 0) {
-                const alloc = specialAllocations[dk] || "PENDING";
-                status = `RE-ALOKASI KE: ${alloc}`;
+                const targets = specialAllocations[dk] || [];
+                if(targets.length > 0) status = `RE-ALOKASI KE: ${targets.join(', ')}`;
+                else status = "PENDING ALOKASI";
             }
 
             sheetDaily.push([
@@ -871,8 +1000,12 @@
         }
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetDaily), "Jurnal Harian");
 
-        // 3. RINCIAN PEGAWAI
+        // ============================================================
+        // SHEET 4: RINCIAN TRANSAKSI SDM
+        // ============================================================
         const sheetDet = [["NAMA SDM", "TANGGAL", "JENIS TRANSAKSI", "JAM KERJA", "NOMINAL"]];
+        
+        // A. Data Absensi
         globalExcelData.forEach(row => {
             const dk = row._normalizedDateKey;
             const sec = dailySummarySeconds[dk]||0;
@@ -880,33 +1013,43 @@
             if(sec > 0 && prof > 0) {
                 const uSec = timeStringToSeconds(row['Total Jam Kerja']);
                 const share = (uSec/sec)*(prof*0.40);
-                sheetDet.push([row['Nama'], row._displayDate, "INSENTIF ABSENSI", row['Total Jam Kerja'], share]);
+                sheetDet.push([row['Nama'] || row['nama'], row._displayDate, "INSENTIF ABSENSI", row['Total Jam Kerja'], share]);
             }
         });
         
-        for (const [dk, target] of Object.entries(specialAllocations)) {
+        // B. Data Alokasi Manual
+        for (const [dk, targets] of Object.entries(specialAllocations)) {
             const prof = tableInputs[dk]||0;
-            if (target === 'MAHASISWA') {
-                sheetDet.push(["SELURUH SDM", moment(dk).format('DD/MM/YYYY'), "BAGI HASIL MERATA", "-", prof*0.40]);
-            } else if (target && uniqueEmployeeList.includes(target)) {
-                sheetDet.push([target, moment(dk).format('DD/MM/YYYY'), "INSENTIF KHUSUS", "-", prof*0.40]);
+            const portion40 = prof*0.40;
+            
+            if(targets.length > 0){
+                const split = portion40 / targets.length;
+                const displayDate = moment(dk).format('DD/MM/YYYY');
+
+                targets.forEach(t => {
+                    if (t === 'MAHASISWA') {
+                        const perPerson = split / uniqueEmployeeList.length;
+                        uniqueEmployeeList.forEach(name => {
+                            sheetDet.push([name, displayDate, "BAGI HASIL MERATA", "-", perPerson]);
+                        });
+                    } else if (t && uniqueEmployeeList.includes(t)) {
+                        sheetDet.push([t, displayDate, "INSENTIF KHUSUS", "-", split]);
+                    }
+                });
             }
         }
-        
-        if(equalShareExport > 0) {
-            sheetDet.push(["", "", "", "", ""]);
-            sheetDet.push(["INFO BAGI HASIL", "TOTAL DANA: " + bonusPoolMhs, "JML PENERIMA: " + uniqueEmployeeList.length, "PER ORANG:", equalShareExport]);
-        }
-
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetDet), "Rincian Transaksi SDM");
 
-        // 4. TOTAL GAJI
+        // ============================================================
+        // SHEET 5: REKAP GAJI AKHIR
+        // ============================================================
         const sheetTotal = [["NAMA SDM", "TOTAL TAKE HOME PAY"]];
         Object.keys(empFinalTotals).sort().forEach(n => {
             sheetTotal.push([n, empFinalTotals[n]]);
         });
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetTotal), "Rekap Gaji Akhir");
 
+        // DOWNLOAD FILE
         XLSX.writeFile(wb, "HASIL_REKAP_" + uploadedFileName + ".xlsx");
     }
 </script>
